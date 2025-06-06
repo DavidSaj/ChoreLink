@@ -94,8 +94,10 @@ export default function DualTimePickerModal({
                 contentContainerStyle={{ paddingVertical: 84 }}
                 style={{ height: 224 }}
                 onScrollToIndexFailed={({ index, averageItemLength }) => {
+                  // Clamp index to valid range
+                  const safeIndex = Math.max(0, Math.min(index, 23)); // or 59 for minutes
                   hourRef.current?.scrollToOffset({
-                    offset: index * averageItemLength,
+                    offset: safeIndex * ITEM_HEIGHT,
                     animated: true,
                   });
                 }}
@@ -133,9 +135,10 @@ export default function DualTimePickerModal({
                 initialNumToRender={60}
                 contentContainerStyle={{ paddingVertical: 84 }}
                 style={{ height: 224 }}
-                onScrollToIndexFailed={({ index, averageItemLength }) => {
+                onScrollToIndexFailed={({ index }) => {
+                  const safeIndex = Math.max(0, Math.min(index, 59));
                   minuteRef.current?.scrollToOffset({
-                    offset: index * averageItemLength,
+                    offset: safeIndex * ITEM_HEIGHT,
                     animated: true,
                   });
                 }}
