@@ -119,61 +119,63 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    width: "90%",
+    width: "98%", 
     backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 16,
-    maxHeight: "80%",
+    borderRadius: 24,
+    padding: 28, 
+    maxHeight: "90%", 
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 20,
   },
   monthText: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 26,
+    fontWeight: "700",
   },
   navText: {
-    fontSize: 18,
+    fontSize: 28, 
+    padding: 18,
   },
   daysRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 4,
+    marginBottom: 8,
   },
   dayLabel: {
-    width: 32,
+    width: 40, 
     textAlign: "center",
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#888",
+    fontSize: 16, 
   },
   dayButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40, 
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    margin: 4,
+    margin: 6,
   },
   dayText: {
-    fontSize: 14,
+    fontSize: 18, 
     color: "#333",
   },
   selectedDay: {
     backgroundColor: "#3b82f6",
   },
   today: {
-    backgroundColor: "#ef4444", // Red background for today
-    borderWidth: 0,             // No border
+    backgroundColor: "#ef4444",
+    borderWidth: 0,
   },
   closeButton: {
-    marginTop: 12,
+    marginTop: 18,
     alignItems: "center",
   },
   closeText: {
     color: "#3b82f6",
-    fontSize: 16,
+    fontSize: 18,
   },
 });
