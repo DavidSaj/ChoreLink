@@ -1,0 +1,300 @@
+import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
+import Modal from "react-native-modal";
+import type { Task } from "../../types/Task";
+import CalendarModal from "./CalendarModal";
+import DualTimePickerModal from "./DualTimePickerModal";
+
+const members = [
+  { name: "Unassigned", color: "#ccc" },
+  { name: "Alice", color: "#f87171" },
+  { name: "Bob", color: "#60a5fa" },
+  { name: "Carol", color: "#34d399" },
+];
+
+type TaskModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  onSubmit: (task: Task) => void;
+};
+
+export default function TaskModal({ visible, onClose }: TaskModalProps) {
+  const now = new Date();
+  const defaultStartHour = now.getHours();
+  const defaultEndHour = (now.getHours() + 1) % 24;
+
+  // Separate state for start/end
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [startHour, setStartHour] = useState(defaultStartHour);
+  const [startMinute, setStartMinute] = useState(0);
+  const [endHour, setEndHour] = useState(defaultEndHour);
+  const [endMinute, setEndMinute] = useState(0);
+  const [taskName, setTaskName] = useState("Enter Task Name here");
+
+  // Which picker is open and for which field
+  const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
+  const [timePickerOpen, setTimePickerOpen] = useState<null | "start" | "end">(null);
+  const [assignedTo, setAssignedTo] = useState<string>("Unassigned");
+  const resetForm = () => {
+    setStartDate(new Date());
+    setEndDate(new Date());
+    setStartHour(defaultStartHour);
+    setStartMinute(0);
+    setEndHour(defaultEndHour);
+    setEndMinute(0);
+    setCalendarOpen(null);
+    setTimePickerOpen(null);
+    setAssignedTo("Unassigned");
+    setTaskName("");
+  };
+
+  useEffect(() => {
+    if (!visible) resetForm();
+  }, [visible]);
+
+  // Only one "sub-modal" open at a time
+  const showTaskForm = visible && !calendarOpen && !timePickerOpen;
+  const showCalendar = !!calendarOpen;
+  const showTimePicker = !!timePickerOpen;
+
+  return (
+    <Modal
+      isVisible={visible || showCalendar || showTimePicker}
+      onBackdropPress={onClose}
+      style={{ margin: 0, justifyContent: "flex-end" }}
+    >
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          {showTaskForm && (
+            <>
+              <Text style={styles.title}>Create Task</Text>
+              <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+                <TextInput
+                  placeholder="Enter task name"
+                  placeholderTextColor="#aaa"
+                  value={taskName}
+                  onChangeText={setTaskName}
+                  style={styles.input}
+                />
+
+                {/* STARTS */}
+                <Text style={styles.sectionTitle}>Starts</Text>
+                <View style={styles.rowContainer}>
+                  <TouchableOpacity
+                    style={styles.dateTimeBox}
+                    onPress={() => setCalendarOpen("start")}
+                  >
+                    <Text style={styles.boxLabel}>Date</Text>
+                    <Text style={styles.boxValue}>
+                      {format(startDate, "dd MMM yyyy")}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.dateTimeBox}
+                    onPress={() => setTimePickerOpen("start")}
+                  >
+                    <Text style={styles.boxLabel}>Time</Text>
+                    <Text style={styles.boxValue}>
+                      {`${String(startHour).padStart(2, "0")}:${String(startMinute).padStart(2, "0")}`}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* ENDS */}
+                <Text style={styles.sectionTitle}>Ends</Text>
+                <View style={styles.rowContainer}>
+                  <TouchableOpacity
+                    style={styles.dateTimeBox}
+                    onPress={() => setCalendarOpen("end")}
+                  >
+                    <Text style={styles.boxLabel}>Date</Text>
+                    <Text style={styles.boxValue}>
+                      {format(endDate, "dd MMM yyyy")}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.dateTimeBox}
+                    onPress={() => setTimePickerOpen("end")}
+                  >
+                    <Text style={styles.boxLabel}>Time</Text>
+                    <Text style={styles.boxValue}>
+                      {`${String(endHour).padStart(2, "0")}:${String(endMinute).padStart(2, "0")}`}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.sectionTitle}>Assign To</Text>
+                <View style={styles.avatarRow}>
+                  {members.map((m) => (
+                    <TouchableOpacity
+                      key={m.name}
+                      style={styles.avatarContainer}
+                      onPress={() => setAssignedTo(m.name)}
+                    >
+                      <View
+                        style={[
+                          styles.circle,
+                          {
+                            backgroundColor: m.color,
+                            borderWidth: assignedTo === m.name ? 2 : 0,
+                            borderColor: "#333",
+                          },
+                        ]}
+                      />
+                      <Text style={styles.nameText}>{m.name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => {
+                    // You can call onSubmit here if needed
+                    resetForm();
+                    onClose();
+                  }}
+                >
+                  <Text style={styles.saveText}>Save Task</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </>
+          )}
+
+          {showCalendar && (
+            <CalendarModal
+              visible={showCalendar}
+              selectedDate={calendarOpen === "start" ? startDate : endDate}
+              onSelect={(date) => {
+                if (calendarOpen === "start") setStartDate(date);
+                else setEndDate(date);
+                setCalendarOpen(null);
+              }}
+              onClose={() => setCalendarOpen(null)}
+            />
+          )}
+
+          {showTimePicker && (
+            <DualTimePickerModal
+              visible={showTimePicker}
+              initialHour={
+                timePickerOpen === "start"
+                  ? defaultStartHour
+                  : defaultEndHour
+              }
+              initialMinute={0}
+              onClose={() => setTimePickerOpen(null)}
+              onConfirm={(hour, minute) => {
+                if (timePickerOpen === "start") {
+                  setStartHour(hour);
+                  setStartMinute(minute);
+                } else {
+                  setEndHour(hour);
+                  setEndMinute(minute);
+                }
+                setTimePickerOpen(null);
+              }}
+            />
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+  },
+  modalContainer: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    minHeight: "60%",
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontSize: 16,
+    marginBottom: 16,
+    color: "#333",
+  },
+  rowContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+    marginBottom: 24,
+  },
+  dateTimeBox: {
+    flex: 1,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 12,
+    padding: 12,
+    alignItems: "center",
+  },
+  boxLabel: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 4,
+  },
+  boxValue: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#222",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  avatarRow: {
+    flexDirection: "row",
+    gap: 16,
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  avatarContainer: {
+    alignItems: "center",
+    gap: 4,
+  },
+  circle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  nameText: {
+    fontSize: 12,
+    marginTop: 4,
+    textAlign: "center",
+  },
+  saveButton: {
+    backgroundColor: "#3b82f6",
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  saveText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});

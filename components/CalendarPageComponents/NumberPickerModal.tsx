@@ -1,12 +1,12 @@
 import React from "react";
 import {
-    Dimensions,
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const screenHeight = Dimensions.get("window").height;
@@ -17,22 +17,29 @@ type Props = {
   onSelect: (val: number) => void;
   range: number;
   selected: number;
+  label: string;
 };
 
 export default function NumberPickerModal({
   visible,
-  onClose,
   onSelect,
   range,
   selected,
+  label,
 }: Props) {
-  const numbers = Array.from({ length: range }, (_, i) => i);
+  let numbers;
+  if (label === "Select year") {
+    const currentYear = new Date().getFullYear();
+    numbers = Array.from({ length: range }, (_, i) => i + currentYear);
+  } else {
+    numbers = Array.from({ length: range }, (_, i) => i + 1);
+  }
 
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.overlay}>
         <View style={styles.sheet}>
-          <Text style={styles.title}>Select</Text>
+          <Text style={styles.title}>{label}</Text>
           <FlatList
             data={numbers}
             keyExtractor={(item) => item.toString()}
@@ -46,7 +53,6 @@ export default function NumberPickerModal({
                 ]}
                 onPress={() => {
                   onSelect(item);
-                  onClose();
                 }}
               >
                 <Text style={styles.itemText}>{String(item).padStart(2, "0")}</Text>

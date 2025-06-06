@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addDays, format, subDays } from "date-fns";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import type { Task } from "../types/Task";
+import type { Task } from "../../types/Task";
 import TaskModal from "./TaskModal";
 
 const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
