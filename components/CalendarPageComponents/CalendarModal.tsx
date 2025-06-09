@@ -54,11 +54,11 @@ export default function CalendarModal({
       <View style={styles.overlay}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+            <TouchableOpacity onPress={() => setCurrentMonth(subMonths(currentMonth, 1))} style={styles.navButton}>
               <Text style={styles.navText}>◀</Text>
             </TouchableOpacity>
             <Text style={styles.monthText}>{format(currentMonth, "MMMM yyyy")}</Text>
-            <TouchableOpacity onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+            <TouchableOpacity onPress={() => setCurrentMonth(addMonths(currentMonth, 1))} style={styles.navButton}>
               <Text style={styles.navText}>▶</Text>
             </TouchableOpacity>
           </View>
@@ -116,28 +116,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
-    alignItems: "center",
   },
   container: {
-    width: "98%", 
+    width: "98%",
     backgroundColor: "#fff",
     borderRadius: 24,
-    padding: 28, 
-    maxHeight: "90%", 
+    padding: 28,
+    maxHeight: "90%",
+    alignSelf: "flex-start",
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    position: "relative",
+    height: 48,
   },
   monthText: {
     fontSize: 26,
     fontWeight: "700",
+    textAlign: "center",
+    flex: 1,
+  },
+  navButton: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    zIndex: 1,
+  },
+  navLeft: {
+    left: 0,
+  },
+  navRight: {
+    right: 0,
   },
   navText: {
-    fontSize: 28, 
-    padding: 18,
+    fontSize: 28,
+    padding: 8,
   },
   daysRow: {
     flexDirection: "row",
@@ -145,14 +162,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   dayLabel: {
-    width: 40, 
+    width: 40,
     textAlign: "center",
     fontWeight: "700",
     color: "#888",
-    fontSize: 16, 
+    fontSize: 16,
   },
   dayButton: {
-    width: 40, 
+    width: 40,
     height: 40,
     borderRadius: 20,
     justifyContent: "center",
@@ -160,7 +177,7 @@ const styles = StyleSheet.create({
     margin: 6,
   },
   dayText: {
-    fontSize: 18, 
+    fontSize: 18,
     color: "#333",
   },
   selectedDay: {
