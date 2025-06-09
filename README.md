@@ -1,50 +1,48 @@
-# Welcome to your Expo app 👋
+ChoreLink to do
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Taskcreation:
 
-## Get started
+UI clean up
+add detail part of task
+add weekly selection biweekly etc
+cancel button. also with pressing the top
+change calendar option at one point
+add option to select full day. 
+add option to select until a date. 
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
+Calendar page:
 
-2. Start the app
+the month selection is in the header. should not be. there it should be welcome to calendar so move down. 
+when scrolling down there are weekly non time specific tasks. 
+clean up ui
+indication red line of exact date.
 
-   ```bash
-   npx expo start
-   ```
 
-In the output, you'll find options to open the app in a
+Log in Page:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+Main Page:
+clean up ui
+when clicket on score it should open a comparison with others
+make scrollable. list should always show too
 
-When you're ready, run:
 
-```bash
-npm run reset-project
-```
+Right of the calendar Page: Taskhistory page;
+history of anyones tasks. with maybe built in feature to show proof or idk. 
+first you see your task history and then others.
+task detail page.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+settings page:
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+NON MVP:
+figure out payment and premium feature
+events
+shopping list
+automatic task creation. connected built in task.
+ai.
+priviliges
+UI overall. make it better. have some better lists that you use everywhere
