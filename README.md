@@ -46,3 +46,7 @@ automatic task creation. connected built in task.
 ai.
 priviliges
 UI overall. make it better. have some better lists that you use everywhere
+
+
+generally:
+every modal that needs screen width should use the same use state and not calculate it more often.

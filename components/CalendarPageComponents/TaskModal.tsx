@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -70,7 +71,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
     <Modal
       isVisible={visible || showCalendar || showTimePicker}
       onBackdropPress={onClose}
-      style={{ margin: 0, justifyContent: "flex-end" }}
+      style={{ margin: 0}}
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
@@ -210,11 +211,14 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   );
 }
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "flex-end",
+    alignItems: "stretch",
   },
   modalContainer: {
     backgroundColor: "#fff",
@@ -222,6 +226,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     minHeight: "60%",
+    width: SCREEN_WIDTH, // <-- Make modal as wide as the screen
+    alignSelf: "center", // <-- Center horizontally
   },
   title: {
     fontSize: 20,
