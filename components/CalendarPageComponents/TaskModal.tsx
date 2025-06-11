@@ -183,7 +183,6 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
                   style={styles.recurrenceBox}
                   onPress={() => setRecurrenceBoxOpen(true)}
                 >
-                  <Text style={styles.boxLabel}>Recurrence</Text>
                   <Text style={styles.boxValue}>
                     {recurrence === "none" ? "None" : 
                      recurrence === "daily" ? "Daily" :
