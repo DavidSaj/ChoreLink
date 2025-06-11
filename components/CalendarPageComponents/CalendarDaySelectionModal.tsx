@@ -8,7 +8,7 @@ import {
   startOfWeek,
   subMonths,
 } from "date-fns";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -16,8 +16,11 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Animated,
 } from "react-native";
 import Modal from "react-native-modal";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 type Props = {
   visible: boolean;
@@ -26,20 +29,22 @@ type Props = {
   onClose: () => void;
 };
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-
-export default function CalendarModal({
-  visible,
-  selectedDate,
-  onSelect,
-  onClose,
-}: Props) {
+export default function CalendarDaySelectionModal({ visible, selectedDate, onSelect, onClose }: Props) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(selectedDate));
+  const [scaleAnim] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 6,
+    }).start();
+  }, [selectedDate]);
 
   const renderGridItems = () => {
     const start = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 });
-    const days: (Date | string)[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const days = [];
     let date = start;
     for (let i = 0; i < 42; i++) {
       days.push(date);
@@ -69,30 +74,42 @@ export default function CalendarModal({
             </TouchableOpacity>
           </View>
 
-          {/* Calendar grid including weekday headers */}
-          <View style={styles.gridWrapper}>
-            <FlatList
-              data={renderGridItems()}
-              keyExtractor={(item, index) =>
-                typeof item === "string" ? item + index : item.toISOString()
-              }
-              numColumns={7}
-              scrollEnabled={false}
-              columnWrapperStyle={styles.gridRow}
-              renderItem={({ item }) => {
-                if (typeof item === "string") {
-                  return (
-                    <View style={styles.gridCell}>
-                      <Text style={styles.dayLabel}>{item}</Text>
-                    </View>
-                  );
-                }
+          {/* Weekday labels */}
+          <View style={styles.daysRow}>
+            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+              <Text key={d} style={styles.dayLabel}>{d}</Text>
+            ))}
+          </View>
 
-                const isToday = isSameDay(item, today);
-                const isSelected = isSameDay(item, selectedDate);
-                const faded = !isSameMonth(item, currentMonth);
+          {/* Calendar grid */}
+          <FlatList
+            data={renderGridItems()}
+            keyExtractor={(item) => item.toISOString()}
+            numColumns={7}
+            scrollEnabled={false}
+            renderItem={({ item }) => {
+              const isSelected = isSameDay(item, selectedDate);
+              const isSecond = isSameDay(item, addDays(selectedDate, 1));
+              const isThird = isSameDay(item, addDays(selectedDate, 2));
+              const isInMonth = isSameMonth(item, currentMonth);
+              const isToday = isSameDay(item, today);
 
-                return (
+              const isRange = isSecond || isThird;
+              const pillStyle = isRange && {
+                backgroundColor: "#e5e7eb",
+                position: "absolute",
+                top: 2,
+                bottom: 2,
+                left: 2,
+                right: 2,
+                borderTopRightRadius: isThird ? 10 : 0,
+                borderBottomRightRadius: isThird ? 10 : 0,
+              };
+
+              return (
+                <View style={styles.gridCell}>
+                  {isRange && <View style={pillStyle} />}
+
                   <TouchableOpacity
                     onPress={() => {
                       onSelect(item);
@@ -100,26 +117,27 @@ export default function CalendarModal({
                     }}
                     style={[
                       styles.dayButton,
+                      isSelected && styles.selectedDay,
                       isToday && styles.today,
-                      isSelected && !isToday && styles.selectedDay,
                     ]}
                   >
-                    <Text
+                    <Animated.Text
                       style={[
                         styles.dayText,
-                        faded && styles.fadedDayText,
-                        (isToday || isSelected) && { color: "#fff" },
+                        !isInMonth && styles.fadedDayText,
+                        isSelected && { color: "#fff" },
+                        isRange && !isSelected && { fontWeight: "600" },
+                        { transform: [{ scale: isSelected ? scaleAnim : 1 }] },
                       ]}
                     >
                       {format(item, "d")}
-                    </Text>
+                    </Animated.Text>
                   </TouchableOpacity>
-                );
-              }}
-            />
-          </View>
+                </View>
+              );
+            }}
+          />
 
-          {/* Cancel button */}
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeText}>Cancel</Text>
           </TouchableOpacity>
@@ -140,9 +158,7 @@ const styles = StyleSheet.create({
     width: Math.min(360, SCREEN_WIDTH * 0.95),
     backgroundColor: "#fff",
     borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingTop: 16,
-    paddingBottom: 12,
+    padding: 16,
     elevation: 10,
   },
   header: {
@@ -168,37 +184,36 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#374151",
   },
-  gridWrapper: {
-    width: "100%",
-    alignSelf: "center",
-  },
-  gridRow: {
-    flex: 1,
+  daysRow: {
+    flexDirection: "row",
     justifyContent: "space-between",
-  },
-  gridCell: {
-    flex: 1,
-    aspectRatio: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 4,
+    marginBottom: 6,
   },
   dayLabel: {
+    width: 38,
+    textAlign: "center",
     fontWeight: "600",
     color: "#6b7280",
     fontSize: 13,
-    textAlign: "center",
   },
-  dayButton: {
-    flex: 1,
-    aspectRatio: 1,
+  gridCell: {
+    width: 44,
+    height: 44,
+    margin: 2,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 100,
-    marginVertical: 4,
+  },
+  dayButton: {
+    width: 38,
+    height: 38,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    zIndex: 2,
   },
   dayText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     color: "#1f2937",
   },

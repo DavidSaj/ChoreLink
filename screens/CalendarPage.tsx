@@ -4,18 +4,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ThreeDayCalendar from '../components/CalendarPageComponents/ThreeDayCalendar';
 
 export default function CalendarPage() {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.arrowButton} onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-          <Text style={styles.navText}>◀</Text>
-        </TouchableOpacity>
-        <Text style={styles.monthText}>{format(currentMonth, "MMMM yyyy")}</Text>
-        <TouchableOpacity style={styles.arrowButton} onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-          <Text style={styles.navText}>▶</Text>
-        </TouchableOpacity>
+        <Text style={styles.navText}>Calendar Page</Text>
       </View>
       <ThreeDayCalendar />
     </View>
@@ -26,14 +19,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f7f8fa',
-    paddingTop: 32,
+    paddingTop: 35,
     paddingHorizontal: 0,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 25,
+    marginLeft: "12%",
   },
   arrowButton: {
     width: 36,

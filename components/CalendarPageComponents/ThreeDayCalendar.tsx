@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { Task } from "../../types/Task";
 import TaskModal, { type TaskModalRef } from "./TaskModal";
+import CalendarDaySelectionModal from "./CalendarDaySelectionModal"
 
 const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
@@ -15,6 +16,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 
 export default function ThreeDayCalendar() {
   const [startDate, setStartDate] = useState(new Date());
+  const [calendarDaySelectionOpen, setCalendarDayselectionOpen] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const taskModalRef = useRef<TaskModalRef>(null);
 
@@ -78,13 +80,22 @@ export default function ThreeDayCalendar() {
             style={{ backgroundColor: "#3b82f6", padding: 6, borderRadius: 8 }}
             onPress={() => setStartDate(new Date())}
           >
-            <Text style={{ color: "white" }}>Today</Text>
+            <Text style={{ color: "white" }}>  Today  </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={{ backgroundColor: "#f59e0b", padding: 6, borderRadius: 8 }}
+            onPress={() => setCalendarDayselectionOpen(true)}
+          >
+            <Text style={{ color: "white" }}>  Calendar  </Text> 
+            
+          </TouchableOpacity>
+          
           <TouchableOpacity
             style={{ backgroundColor: "#10b981", padding: 6, borderRadius: 8 }}
             onPress={() => taskModalRef.current?.openModal()}
           >
-            <Text style={{ color: "white" }}>Add Task</Text>
+            <Text style={{ color: "white" }}>  Add Task  </Text>
           </TouchableOpacity>
         </View>
 
@@ -98,6 +109,13 @@ export default function ThreeDayCalendar() {
         ref={taskModalRef}
         onClose={() => {}}
         onSubmit={handleAddTask}
+      />
+      {/* Calendar Day Selection Modal */}
+      <CalendarDaySelectionModal
+        visible={calendarDaySelectionOpen}
+        selectedDate={startDate}
+        onSelect={(date) => setStartDate(date)}
+        onClose={() => setCalendarDayselectionOpen(false)}
       />
 
       {/* Date Row */}
