@@ -78,7 +78,7 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
     <Modal
       isVisible={visible || showCalendar || showTimePicker}
       onBackdropPress={handleClose}
-      style={{ margin: 0}}
+      style={{ margin: 0 }}
     >
       <TouchableOpacity 
         style={styles.overlay} 
@@ -89,8 +89,7 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
           style={styles.modalContainer} 
           activeOpacity={1} 
           onPress={(e) => e.stopPropagation()}
-        ></TouchableOpacity>
-      </TouchableOpacity>
+        >
           {showTaskForm && (
             <>
               <Text style={styles.title}>Create Task</Text>
@@ -194,48 +193,48 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
               </ScrollView>
             </>
           )}
-
-          {showCalendar && (
-            <CalendarModal
-              visible={showCalendar}
-              selectedDate={calendarOpen === "start" ? startDate : endDate}
-              onSelect={(date) => {
-                if (calendarOpen === "start") setStartDate(date);
-                else setEndDate(date);
-                setCalendarOpen(null);
-              }}
-              onClose={() => setCalendarOpen(null)}
-            />
-          )}
-
-          {showTimePicker && (
-            <DualTimePickerModal
-              visible={showTimePicker}
-              initialHour={
-                timePickerOpen === "start"
-                  ? startHour
-                  : endHour
-              }
-              initialMinute={
-                timePickerOpen === "start"
-                  ? startMinute
-                  : endMinute
-              }
-              onClose={() => setTimePickerOpen(null)}
-              onConfirm={(hour, minute) => {
-                if (timePickerOpen === "start") {
-                  setStartHour(hour);
-                  setStartMinute(minute);
-                } else {
-                  setEndHour(hour);
-                  setEndMinute(minute);
-                }
-                setTimePickerOpen(null);
-              }}
-            />
-          )}
         </TouchableOpacity>
       </TouchableOpacity>
+
+      {showCalendar && (
+        <CalendarModal
+          visible={showCalendar}
+          selectedDate={calendarOpen === "start" ? startDate : endDate}
+          onSelect={(date) => {
+            if (calendarOpen === "start") setStartDate(date);
+            else setEndDate(date);
+            setCalendarOpen(null);
+          }}
+          onClose={() => setCalendarOpen(null)}
+        />
+      )}
+
+      {showTimePicker && (
+        <DualTimePickerModal
+          visible={showTimePicker}
+          initialHour={
+            timePickerOpen === "start"
+              ? startHour
+              : endHour
+          }
+          initialMinute={
+            timePickerOpen === "start"
+              ? startMinute
+              : endMinute
+          }
+          onClose={() => setTimePickerOpen(null)}
+          onConfirm={(hour, minute) => {
+            if (timePickerOpen === "start") {
+              setStartHour(hour);
+              setStartMinute(minute);
+            } else {
+              setEndHour(hour);
+              setEndMinute(minute);
+            }
+            setTimePickerOpen(null);
+          }}
+        />
+      )}
     </Modal>
   );
 });
