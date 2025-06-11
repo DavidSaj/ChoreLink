@@ -79,6 +79,20 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
       isVisible={visible || showCalendar || showTimePicker}
       onBackdropPress={handleClose}
       style={{ margin: 0 }}
+      useNativeDriver={true}
+      useNativeDriverForBackdrop={true}
+
+      // 🔹 Backdrop fades in/out (not directional)
+      backdropOpacity={0.5}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={200}
+
+      // 🔹 Modal content slides in from bottom
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+      animationInTiming={400}
+      animationOutTiming={300}
+
     >
       <TouchableOpacity 
         style={styles.overlay} 
