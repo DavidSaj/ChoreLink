@@ -70,7 +70,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   return (
     <Modal
       isVisible={visible || showCalendar || showTimePicker}
-      onBackdropPress={onClose}
+      onBackdropPress={() => setModalVisible(false)}
       style={{ margin: 0}}
     >
       <View style={styles.overlay}>
