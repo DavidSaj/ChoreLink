@@ -39,7 +39,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   const [startMinute, setStartMinute] = useState(0);
   const [endHour, setEndHour] = useState(defaultEndHour);
   const [endMinute, setEndMinute] = useState(0);
-  const [taskName, setTaskName] = useState("Enter Task Name here");
+  const [taskName, setTaskName] = useState("");
 
   // Which picker is open and for which field
   const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
@@ -81,10 +81,12 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
               <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
                 <TextInput
                   placeholder="Enter task name"
-                  placeholderTextColor="#aaa"
+                  placeholderTextColor="#999"
                   value={taskName}
                   onChangeText={setTaskName}
                   style={styles.input}
+                  autoFocus={false}
+                  selectTextOnFocus={false}
                 />
 
                 {/* STARTS */}
@@ -239,10 +241,12 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 16,
     marginBottom: 16,
-    color: "#333",
+    color: "#222",
+    backgroundColor: "#fff",
+    minHeight: 44,
   },
   rowContainer: {
     flexDirection: "row",
