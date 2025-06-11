@@ -14,6 +14,7 @@ import Modal from "react-native-modal";
 import type { Task } from "../../types/Task";
 import CalendarModal from "./CalendarModal";
 import DualTimePickerModal from "./DualTimePickerModal";
+import RecurrencePickerModal from "./RecurrencePicker";
 
 const members = [
   { name: "Unassigned", color: "#ccc" },
@@ -44,7 +45,8 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
   const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
   const [timePickerOpen, setTimePickerOpen] = useState<null | "start" | "end">(null);
   const [assignedTo, setAssignedTo] = useState<string>("Unassigned");
-  const [recurrenceBoxOpen, setRecurrenceBoxOpen] = useState(false)
+  const [recurrenceBoxOpen, setRecurrenceBoxOpen] = useState(false);
+  const [recurrence, setRecurrence] = useState<string>("none");
 
   useImperativeHandle(ref, () => ({
     openModal: () => setVisible(true),
@@ -62,6 +64,8 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
     setTimePickerOpen(null);
     setAssignedTo("Unassigned");
     setTaskName("");
+    setRecurrence("none");
+    setRecurrenceBoxOpen(false);
   };
 
   const handleClose = () => {
@@ -71,13 +75,14 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
   };
 
   // Only one "sub-modal" open at a time
-  const showTaskForm = visible && !calendarOpen && !timePickerOpen;
+  const showTaskForm = visible && !calendarOpen && !timePickerOpen && !recurrenceBoxOpen;
   const showCalendar = !!calendarOpen;
   const showTimePicker = !!timePickerOpen;
+  const showRecurrencePicker = !!recurrenceBoxOpen;
 
   return (
     <Modal
-      isVisible={visible || showCalendar || showTimePicker}
+      isVisible={visible || showCalendar || showTimePicker || showRecurrencePicker}
       onBackdropPress={handleClose}
       backdropOpacity={0.5}
       animationIn="slideInUp"
@@ -176,10 +181,19 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
                 <Text style={styles.sectionTitle}>Recurrence</Text>
                 <TouchableOpacity 
                   style={styles.recurrenceBox}
-                  placeholder="Select recurrence"
-                  onPress={() = setRecurrenceBoxOpen()}
+                  onPress={() => setRecurrenceBoxOpen(true)}
                 >
                   <Text style={styles.boxLabel}>Recurrence</Text>
+                  <Text style={styles.boxValue}>
+                    {recurrence === "none" ? "None" : 
+                     recurrence === "daily" ? "Daily" :
+                     recurrence === "weekly" ? "Weekly" :
+                     recurrence === "biweekly" ? "Bi-weekly" :
+                     recurrence === "monthly" ? "Monthly" :
+                     recurrence === "quarterly" ? "Quarterly" :
+                     recurrence === "biannually" ? "Bi-annually" :
+                     recurrence === "yearly" ? "Yearly" : "None"}
+                  </Text>
                 </TouchableOpacity>
               
 
@@ -242,6 +256,18 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
             }
             setTimePickerOpen(null);
           }}
+        />
+      )}
+
+      {showRecurrencePicker && (
+        <RecurrencePickerModal
+          visible={showRecurrencePicker}
+          selectedValue={recurrence}
+          onSelect={(value) => {
+            setRecurrence(value);
+            setRecurrenceBoxOpen(false);
+          }}
+          onClose={() => setRecurrenceBoxOpen(false)}
         />
       )}
     </Modal>
@@ -342,5 +368,6 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: "center",
     marginBottom: 24,
+    width: "100%",
   }
 });
