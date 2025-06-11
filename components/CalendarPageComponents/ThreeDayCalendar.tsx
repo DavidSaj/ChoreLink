@@ -1,5 +1,3 @@
-// components/ThreeDayCalendar.tsx
-
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { addDays, format, subDays } from "date-fns";

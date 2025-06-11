@@ -135,16 +135,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    width: Math.min(340, SCREEN_WIDTH * 0.96), // Responsive width, max 340
+    width: Math.min(340, SCREEN_WIDTH * 0.96),
     backgroundColor: "#f9fafb",
     borderRadius: 28,
-    padding: 16, // Less padding for smaller look
+    padding: 16,
     maxHeight: "92%",
     alignSelf: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
     elevation: 8,
   },
   header: {
@@ -170,10 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#e0e7ef",
     marginHorizontal: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.08)",
     elevation: 2,
   },
   arrowText: {
@@ -216,10 +210,7 @@ const styles = StyleSheet.create({
   selectedDay: {
     backgroundColor: "#3b82f6",
     borderColor: "#2563eb",
-    shadowColor: "#3b82f6",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
+    boxShadow: "0 2px 6px rgba(59, 130, 246, 0.18)",
     elevation: 3,
   },
   today: {

@@ -1,6 +1,6 @@
 
 import { format } from "date-fns";
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Dimensions,
   ScrollView,
@@ -33,28 +33,18 @@ type TaskModalProps = {
 };
 
 const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit }, ref) => {
-  const now = new Date();
-  const defaultStartHour = now.getHours();
-  const defaultEndHour = (now.getHours() + 1) % 24;
-
-  // Modal visibility state
   const [visible, setVisible] = useState(false);
-
-  // Separate state for start/end
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [startHour, setStartHour] = useState(defaultStartHour);
+  const [startHour, setStartHour] = useState(9);
   const [startMinute, setStartMinute] = useState(0);
-  const [endHour, setEndHour] = useState(defaultEndHour);
+  const [endHour, setEndHour] = useState(10);
   const [endMinute, setEndMinute] = useState(0);
   const [taskName, setTaskName] = useState("");
-
-  // Which picker is open and for which field
   const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
   const [timePickerOpen, setTimePickerOpen] = useState<null | "start" | "end">(null);
   const [assignedTo, setAssignedTo] = useState<string>("Unassigned");
 
-  // Expose methods to parent via ref
   useImperativeHandle(ref, () => ({
     openModal: () => setVisible(true),
     closeModal: () => setVisible(false),
@@ -63,9 +53,9 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
   const resetForm = () => {
     setStartDate(new Date());
     setEndDate(new Date());
-    setStartHour(defaultStartHour);
+    setStartHour(9);
     setStartMinute(0);
-    setEndHour(defaultEndHour);
+    setEndHour(10);
     setEndMinute(0);
     setCalendarOpen(null);
     setTimePickerOpen(null);
@@ -78,10 +68,6 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
     resetForm();
     onClose();
   };
-
-  useEffect(() => {
-    if (!visible) resetForm();
-  }, [visible]);
 
   // Only one "sub-modal" open at a time
   const showTaskForm = visible && !calendarOpen && !timePickerOpen;

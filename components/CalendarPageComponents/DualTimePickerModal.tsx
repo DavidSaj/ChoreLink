@@ -74,7 +74,7 @@ export default function DualTimePickerModal({
           <Text style={styles.title}>Select Time</Text>
           <View style={styles.pickerRow}>
             {/* Highlighted Area */}
-            <View style={styles.highlightLine} pointerEvents="none" />
+            <View style={[styles.highlightLine, { pointerEvents: 'none' }]} />
 
             {/* Hour Picker */}
             <View style={styles.column}>
