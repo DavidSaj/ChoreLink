@@ -78,22 +78,32 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
     <Modal
       isVisible={visible || showCalendar || showTimePicker}
       onBackdropPress={handleClose}
-      style={{ margin: 0, justifyContent: 'flex-end' }}
+      style={{ margin: 0 }}
       useNativeDriver={true}
-      useNativeDriverForBackdrop={false}
+      useNativeDriverForBackdrop={true}
 
-      // 🔹 Backdrop appears instantly without animation
+      // 🔹 Backdrop fades in/out (not directional)
       backdropOpacity={0.5}
-      backdropTransitionInTiming={0}
-      backdropTransitionOutTiming={0}
+      backdropTransitionInTiming={300}
+      backdropTransitionOutTiming={200}
 
       // 🔹 Modal content slides in from bottom
       animationIn="slideInUp"
       animationOut="slideOutDown"
       animationInTiming={400}
       animationOutTiming={300}
+
     >
-      <View style={styles.modalContainer}
+      <TouchableOpacity 
+        style={styles.overlay} 
+        activeOpacity={1} 
+        onPress={handleClose}
+      >
+        <TouchableOpacity 
+          style={styles.modalContainer} 
+          activeOpacity={1} 
+          onPress={(e) => e.stopPropagation()}
+        >
           {showTaskForm && (
             <>
               <Text style={styles.title}>Create Task</Text>
@@ -197,7 +207,8 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
               </ScrollView>
             </>
           )}
-        </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
 
       {showCalendar && (
         <CalendarModal
@@ -247,6 +258,12 @@ export default TaskModal;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
+    alignItems: "stretch",
+  },
   modalContainer: {
     backgroundColor: "#fff",
     borderTopLeftRadius: 20,
@@ -254,6 +271,7 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: "60%",
     width: SCREEN_WIDTH,
+    alignSelf: "center",
   },
   title: {
     fontSize: 20,
