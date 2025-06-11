@@ -213,6 +213,8 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   );
 }
 
+export default TaskModal;
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({

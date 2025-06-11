@@ -6,7 +6,7 @@ import { addDays, format, subDays } from "date-fns";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { Task } from "../../types/Task";
-import TaskModal from "./TaskModal";
+import TaskModal, { type TaskModalRef } from "./TaskModal";
 
 const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`);
 
@@ -18,8 +18,8 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 export default function ThreeDayCalendar() {
   const [startDate, setStartDate] = useState(new Date());
   const scrollRef = useRef<ScrollView>(null);
+  const taskModalRef = useRef<TaskModalRef>(null);
 
-  const [isModalVisible, setModalVisible] = useState(false);
   const handleAddTask = (task: Task) => {
     console.log("Task added:", task);
   };
@@ -84,7 +84,7 @@ export default function ThreeDayCalendar() {
           </TouchableOpacity>
           <TouchableOpacity
             style={{ backgroundColor: "#10b981", padding: 6, borderRadius: 8 }}
-            onPress={() => setModalVisible(true)}
+            onPress={() => taskModalRef.current?.openModal()}
           >
             <Text style={{ color: "white" }}>Add Task</Text>
           </TouchableOpacity>
@@ -97,8 +97,8 @@ export default function ThreeDayCalendar() {
 
       {/* Task Modal */}
       <TaskModal
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
+        ref={taskModalRef}
+        onClose={() => {}}
         onSubmit={handleAddTask}
       />
 
