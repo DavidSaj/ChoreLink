@@ -1,5 +1,6 @@
+
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import {
   Dimensions,
   ScrollView,
@@ -21,16 +22,23 @@ const members = [
   { name: "Carol", color: "#34d399" },
 ];
 
+export type TaskModalRef = {
+  openModal: () => void;
+  closeModal: () => void;
+};
+
 type TaskModalProps = {
-  visible: boolean;
   onClose: () => void;
   onSubmit: (task: Task) => void;
 };
 
-export default function TaskModal({ visible, onClose }: TaskModalProps) {
+const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit }, ref) => {
   const now = new Date();
   const defaultStartHour = now.getHours();
   const defaultEndHour = (now.getHours() + 1) % 24;
+
+  // Modal visibility state
+  const [visible, setVisible] = useState(false);
 
   // Separate state for start/end
   const [startDate, setStartDate] = useState(new Date());
@@ -45,6 +53,13 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
   const [timePickerOpen, setTimePickerOpen] = useState<null | "start" | "end">(null);
   const [assignedTo, setAssignedTo] = useState<string>("Unassigned");
+
+  // Expose methods to parent via ref
+  useImperativeHandle(ref, () => ({
+    openModal: () => setVisible(true),
+    closeModal: () => setVisible(false),
+  }));
+
   const resetForm = () => {
     setStartDate(new Date());
     setEndDate(new Date());
@@ -56,6 +71,12 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
     setTimePickerOpen(null);
     setAssignedTo("Unassigned");
     setTaskName("");
+  };
+
+  const handleClose = () => {
+    setVisible(false);
+    resetForm();
+    onClose();
   };
 
   useEffect(() => {
@@ -70,7 +91,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
   return (
     <Modal
       isVisible={visible || showCalendar || showTimePicker}
-      onBackdropPress={() => setModalVisible(false)}
+      onBackdropPress={handleClose}
       style={{ margin: 0}}
     >
       <View style={styles.overlay}>
@@ -161,9 +182,16 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
                 <TouchableOpacity
                   style={styles.saveButton}
                   onPress={() => {
-                    // You can call onSubmit here if needed
-                    resetForm();
-                    onClose();
+                    // Create task object and call onSubmit if needed
+                    const task: Task = {
+                      id: Date.now().toString(),
+                      title: taskName,
+                      startTime: new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), startHour, startMinute),
+                      endTime: new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), endHour, endMinute),
+                      assignedTo,
+                    };
+                    onSubmit(task);
+                    handleClose();
                   }}
                 >
                   <Text style={styles.saveText}>Save Task</Text>
@@ -190,10 +218,14 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
               visible={showTimePicker}
               initialHour={
                 timePickerOpen === "start"
-                  ? defaultStartHour
-                  : defaultEndHour
+                  ? startHour
+                  : endHour
               }
-              initialMinute={0}
+              initialMinute={
+                timePickerOpen === "start"
+                  ? startMinute
+                  : endMinute
+              }
               onClose={() => setTimePickerOpen(null)}
               onConfirm={(hour, minute) => {
                 if (timePickerOpen === "start") {
@@ -211,7 +243,7 @@ export default function TaskModal({ visible, onClose }: TaskModalProps) {
       </View>
     </Modal>
   );
-}
+});
 
 export default TaskModal;
 
@@ -230,8 +262,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     minHeight: "60%",
-    width: SCREEN_WIDTH, // <-- Make modal as wide as the screen
-    alignSelf: "center", // <-- Center horizontally
+    width: SCREEN_WIDTH,
+    alignSelf: "center",
   },
   title: {
     fontSize: 20,
