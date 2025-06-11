@@ -44,6 +44,7 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
   const [calendarOpen, setCalendarOpen] = useState<null | "start" | "end">(null);
   const [timePickerOpen, setTimePickerOpen] = useState<null | "start" | "end">(null);
   const [assignedTo, setAssignedTo] = useState<string>("Unassigned");
+  const [recurrenceBoxOpen, setRecurrenceBoxOpen] = useState(false)
 
   useImperativeHandle(ref, () => ({
     openModal: () => setVisible(true),
@@ -171,6 +172,16 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
                     </TouchableOpacity>
                   ))}
                 </View>
+
+                <Text style={styles.sectionTitle}>Recurrence</Text>
+                <TouchableOpacity 
+                  style={styles.recurrenceBox}
+                  placeholder="Select recurrence"
+                  onPress={() = setRecurrenceBoxOpen()}
+                >
+                  <Text style={styles.boxLabel}>Recurrence</Text>
+                </TouchableOpacity>
+              
 
                 <TouchableOpacity
                   style={styles.saveButton}
@@ -325,4 +336,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  recurrenceBox: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 12,
+    padding: 12,
+    alignItems: "center",
+    marginBottom: 24,
+  }
 });
