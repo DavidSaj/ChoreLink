@@ -80,8 +80,17 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
       onBackdropPress={handleClose}
       style={{ margin: 0}}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+      <TouchableOpacity 
+        style={styles.overlay} 
+        activeOpacity={1} 
+        onPress={handleClose}
+      >
+        <TouchableOpacity 
+          style={styles.modalContainer} 
+          activeOpacity={1} 
+          onPress={(e) => e.stopPropagation()}
+        ></TouchableOpacity>
+      </TouchableOpacity>
           {showTaskForm && (
             <>
               <Text style={styles.title}>Create Task</Text>
@@ -225,8 +234,8 @@ const TaskModal = forwardRef<TaskModalRef, TaskModalProps>(({ onClose, onSubmit 
               }}
             />
           )}
-        </View>
-      </View>
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   );
 });
