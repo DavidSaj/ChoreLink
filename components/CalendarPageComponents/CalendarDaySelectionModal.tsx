@@ -121,8 +121,6 @@ export default function CalendarDaySelectionModal({
                     }
                   : undefined;
 
-              // Circle shape for today when NOT selected or in range
-
               return (
                 <View style={styles.gridCell}>
                   {backgroundStyle && <View style={backgroundStyle} />}
