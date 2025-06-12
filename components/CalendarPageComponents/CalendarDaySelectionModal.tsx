@@ -10,13 +10,13 @@ import {
 } from "date-fns";
 import React, { useEffect, useState } from "react";
 import {
+  Animated,
   Dimensions,
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Animated,
 } from "react-native";
 import Modal from "react-native-modal";
 
@@ -29,7 +29,12 @@ type Props = {
   onClose: () => void;
 };
 
-export default function CalendarDaySelectionModal({ visible, selectedDate, onSelect, onClose }: Props) {
+export default function CalendarDaySelectionModal({
+  visible,
+  selectedDate,
+  onSelect,
+  onClose,
+}: Props) {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(startOfMonth(selectedDate));
   const [scaleAnim] = useState(new Animated.Value(0));
@@ -65,7 +70,9 @@ export default function CalendarDaySelectionModal({ visible, selectedDate, onSel
             >
               <Text style={styles.arrowText}>‹</Text>
             </TouchableOpacity>
-            <Text style={styles.monthText}>{format(currentMonth, "MMMM yyyy")}</Text>
+            <Text style={styles.monthText}>
+              {format(currentMonth, "MMMM yyyy")}
+            </Text>
             <TouchableOpacity
               onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}
               style={styles.arrowButton}
@@ -77,7 +84,9 @@ export default function CalendarDaySelectionModal({ visible, selectedDate, onSel
           {/* Weekday labels */}
           <View style={styles.daysRow}>
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-              <Text key={d} style={styles.dayLabel}>{d}</Text>
+              <Text key={d} style={styles.dayLabel}>
+                {d}
+              </Text>
             ))}
           </View>
 
@@ -93,23 +102,30 @@ export default function CalendarDaySelectionModal({ visible, selectedDate, onSel
               const isThird = isSameDay(item, addDays(selectedDate, 2));
               const isInMonth = isSameMonth(item, currentMonth);
               const isToday = isSameDay(item, today);
-
               const isRange = isSecond || isThird;
-              const pillStyle = isRange && {
-                backgroundColor: "#e5e7eb",
-                position: "absolute",
-                top: 2,
-                bottom: 2,
-                left: 2,
-                right: 2,
-                borderTopRightRadius: isThird ? 10 : 0,
-                borderBottomRightRadius: isThird ? 10 : 0,
-              };
+
+              const todayInRange = isToday && isRange;
+
+              // Background layer: range pills
+              const backgroundStyle =
+                isRange || todayInRange
+                  ? {
+                      backgroundColor: isToday ? "#10b981" : "#e5e7eb",
+                      position: "absolute" as const,
+                      top: 2,
+                      bottom: 2,
+                      left: 2,
+                      right: 2,
+                      borderTopRightRadius: isThird ? 10 : 0,
+                      borderBottomRightRadius: isThird ? 10 : 0,
+                    }
+                  : undefined;
+
+              // Circle shape for today when NOT selected or in range
 
               return (
                 <View style={styles.gridCell}>
-                  {isRange && <View style={pillStyle} />}
-
+                  {backgroundStyle && <View style={backgroundStyle} />}
                   <TouchableOpacity
                     onPress={() => {
                       onSelect(item);
@@ -118,7 +134,8 @@ export default function CalendarDaySelectionModal({ visible, selectedDate, onSel
                     style={[
                       styles.dayButton,
                       isSelected && styles.selectedDay,
-                      isToday && styles.today,
+                      isSelected && isToday && styles.selectedToday,
+                      isToday && !isSelected && !isRange && styles.today,
                     ]}
                   >
                     <Animated.Text
@@ -127,7 +144,9 @@ export default function CalendarDaySelectionModal({ visible, selectedDate, onSel
                         !isInMonth && styles.fadedDayText,
                         isSelected && { color: "#fff" },
                         isRange && !isSelected && { fontWeight: "600" },
-                        { transform: [{ scale: isSelected ? scaleAnim : 1 }] },
+                        {
+                          transform: [{ scale: isSelected ? scaleAnim : 1 }],
+                        },
                       ]}
                     >
                       {format(item, "d")}
@@ -208,8 +227,6 @@ const styles = StyleSheet.create({
     height: 38,
     justifyContent: "center",
     alignItems: "center",
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
     zIndex: 2,
   },
   dayText: {
@@ -222,10 +239,18 @@ const styles = StyleSheet.create({
   },
   selectedDay: {
     backgroundColor: "#3b82f6",
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   today: {
     backgroundColor: "#10b981",
   },
+  selectedToday: {
+    backgroundColor: "#10b981",
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+
   closeButton: {
     marginTop: 16,
     borderRadius: 14,
