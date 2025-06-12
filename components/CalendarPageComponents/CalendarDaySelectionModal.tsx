@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
   },
   today: {
     backgroundColor: "#10b981",
+    borderRadius: 19,
   },
   selectedToday: {
     backgroundColor: "#10b981",
