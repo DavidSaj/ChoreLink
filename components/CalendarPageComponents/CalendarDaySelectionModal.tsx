@@ -47,9 +47,10 @@ export default function CalendarDaySelectionModal({
     }).start();
   }, [selectedDate]);
 
+  // --- FIX: Use same grid logic as CalendarModal, include weekday headers as first 7 items ---
   const renderGridItems = () => {
     const start = startOfWeek(startOfMonth(currentMonth), { weekStartsOn: 1 });
-    const days = [];
+    const days: (Date | string)[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
     let date = start;
     for (let i = 0; i < 42; i++) {
       days.push(date);
@@ -57,6 +58,7 @@ export default function CalendarDaySelectionModal({
     }
     return days;
   };
+  // --- END FIX ---
 
   return (
     <Modal isVisible={visible} onBackdropPress={onClose}>
@@ -81,79 +83,84 @@ export default function CalendarDaySelectionModal({
             </TouchableOpacity>
           </View>
 
-          {/* Weekday labels */}
-          <View style={styles.daysRow}>
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-              <Text key={d} style={styles.dayLabel}>
-                {d}
-              </Text>
-            ))}
-          </View>
+          {/* --- FIX: Remove separate weekday labels, use FlatList for all grid items --- */}
+          <View style={styles.gridWrapper}>
+            <FlatList
+              data={renderGridItems()}
+              keyExtractor={(item, index) =>
+                typeof item === "string" ? item + index : item.toISOString()
+              }
+              numColumns={7}
+              scrollEnabled={false}
+              columnWrapperStyle={styles.gridRow}
+              renderItem={({ item }) => {
+                if (typeof item === "string") {
+                  return (
+                    <View style={styles.gridCell}>
+                      <Text style={styles.dayLabel}>{item}</Text>
+                    </View>
+                  );
+                }
 
-          {/* Calendar grid */}
-          <FlatList
-            data={renderGridItems()}
-            keyExtractor={(item) => item.toISOString()}
-            numColumns={7}
-            scrollEnabled={false}
-            renderItem={({ item }) => {
-              const isSelected = isSameDay(item, selectedDate);
-              const isSecond = isSameDay(item, addDays(selectedDate, 1));
-              const isThird = isSameDay(item, addDays(selectedDate, 2));
-              const isInMonth = isSameMonth(item, currentMonth);
-              const isToday = isSameDay(item, today);
-              const isRange = isSecond || isThird;
+                const isSelected = isSameDay(item, selectedDate);
+                const isSecond = isSameDay(item, addDays(selectedDate, 1));
+                const isThird = isSameDay(item, addDays(selectedDate, 2));
+                const isInMonth = isSameMonth(item, currentMonth);
+                const isToday = isSameDay(item, today);
+                const isRange = isSecond || isThird;
 
-              const todayInRange = isToday && isRange;
+                const todayInRange = isToday && isRange;
 
-              // Background layer: range pills
-              const backgroundStyle =
-                isRange || todayInRange
-                  ? {
-                      backgroundColor: isToday ? "#10b981" : "#e5e7eb",
-                      position: "absolute" as const,
-                      top: 2,
-                      bottom: 2,
-                      left: 2,
-                      right: 2,
-                      borderTopRightRadius: isThird ? 10 : 0,
-                      borderBottomRightRadius: isThird ? 10 : 0,
-                    }
-                  : undefined;
+                // Background layer: range pills
+                const backgroundStyle =
+                  isRange || todayInRange
+                    ? {
+                        backgroundColor: isToday ? "#10b981" : "#e5e7eb",
+                        position: "absolute" as const,
+                        top: 2,
+                        bottom: 2,
+                        left: 2,
+                        right: 2,
+                        borderTopRightRadius: isThird ? 10 : 0,
+                        borderBottomRightRadius: isThird ? 10 : 0,
+                      }
+                    : undefined;
 
-              return (
-                <View style={styles.gridCell}>
-                  {backgroundStyle && <View style={backgroundStyle} />}
-                  <TouchableOpacity
-                    onPress={() => {
-                      onSelect(item);
-                      onClose();
-                    }}
-                    style={[
-                      styles.dayButton,
-                      isSelected && styles.selectedDay,
-                      isSelected && isToday && styles.selectedToday,
-                      isToday && !isSelected && !isRange && styles.today,
-                    ]}
-                  >
-                    <Animated.Text
+                return (
+                  <View style={styles.gridCell}>
+                    {backgroundStyle && <View style={backgroundStyle} />}
+                    <TouchableOpacity
+                      onPress={() => {
+                        onSelect(item);
+                        onClose();
+                      }}
                       style={[
-                        styles.dayText,
-                        !isInMonth && styles.fadedDayText,
-                        isSelected && { color: "#fff" },
-                        isRange && !isSelected && { fontWeight: "600" },
-                        {
-                          transform: [{ scale: isSelected ? scaleAnim : 1 }],
-                        },
+                        styles.dayButton,
+                        isSelected && styles.selectedDay,
+                        isSelected && isToday && styles.selectedToday,
+                        isToday && !isSelected && !isRange && styles.today,
                       ]}
                     >
-                      {format(item, "d")}
-                    </Animated.Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
+                      <Animated.Text
+                        style={[
+                          styles.dayText,
+                          !isInMonth && styles.fadedDayText,
+                          isSelected && { color: "#fff" },
+                          isRange && !isSelected && { fontWeight: "600" },
+                          {
+                            transform: [{ scale: isSelected ? scaleAnim : 1 }],
+                          },
+                        ]}
+                      >
+                        {format(item, "d")}
+                      </Animated.Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+          </View>
+          {/* --- END FIX --- */}
 
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeText}>Cancel</Text>
@@ -164,10 +171,10 @@ export default function CalendarDaySelectionModal({
   );
 }
 
+// --- FIX: Add gridWrapper and gridRow styles for alignment, match CalendarModal ---
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -175,7 +182,9 @@ const styles = StyleSheet.create({
     width: Math.min(360, SCREEN_WIDTH * 0.95),
     backgroundColor: "#fff",
     borderRadius: 20,
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingTop: 16,
+    paddingBottom: 12,
     elevation: 10,
   },
   header: {
@@ -201,34 +210,37 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#374151",
   },
-  daysRow: {
-    flexDirection: "row",
+  gridWrapper: {
+    width: "100%",
+    alignSelf: "center",
+  },
+  gridRow: {
+    flex: 1,
     justifyContent: "space-between",
-    marginBottom: 6,
+  },
+  gridCell: {
+    flex: 1,
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 4,
   },
   dayLabel: {
-    width: 38,
-    textAlign: "center",
     fontWeight: "600",
     color: "#6b7280",
     fontSize: 13,
-  },
-  gridCell: {
-    width: 44,
-    height: 44,
-    margin: 2,
-    justifyContent: "center",
-    alignItems: "center",
+    textAlign: "center",
   },
   dayButton: {
-    width: 38,
-    height: 38,
+    flex: 1,
+    aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginVertical: 4,
     zIndex: 2,
   },
   dayText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "500",
     color: "#1f2937",
   },
@@ -242,14 +254,13 @@ const styles = StyleSheet.create({
   },
   today: {
     backgroundColor: "#10b981",
-    borderRadius: 19,
+    borderRadius: 100,
   },
   selectedToday: {
     backgroundColor: "#10b981",
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
-
   closeButton: {
     marginTop: 16,
     borderRadius: 14,
