@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 4,
+    marginVertical: 2,
     zIndex: 2,
   },
   dayText: {
